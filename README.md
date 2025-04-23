@@ -3,7 +3,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[ENGLISH]('./README-en.md')
+[ENGLISH](./README-en.md)
 
 一个轻量级的 PHP 实现的 S3 兼容对象存储服务器，使用本地文件系统作为存储后端。
 
