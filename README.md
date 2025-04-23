@@ -16,6 +16,21 @@
 - ✅ 轻量级，单文件部署
 
 
+
+## 太长不看版说明
+
+只需在虚拟主机上新建一个网站，要把Github仓库内 index.php 放入这个网站根目录，修改 index.php 开头的密码配置，配置好路由重写，即可开始使用。
+endpoint 就是你的网站域名
+access_key 就是你配置的密码
+secret_key 随便填，对本项目无意义
+region 随便填，对本项目无意义
+
+假如一个对象的 bucket="music" key="hello.mp3"
+将被储存为 ./data/music/hello.mp3
+
+你还可以搭配上 Cloudflare 的 CDN ，又快又稳。
+
+
 ## 快速开始
 
 ### 环境要求
@@ -57,6 +72,7 @@ define('ALLOWED_ACCESS_KEYS', ['改为你想要的访问密钥']);
 // 允许的访问密钥，在第三方OSS工具中使用时只需要填写 access-key 即可，其它的 region 和 secret-key 随意填写
 
 ```
+
 
 
 ### 开始尝试使用吧

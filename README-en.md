@@ -12,6 +12,26 @@ A lightweight S3-compatible object storage server implemented in PHP, using loca
 - ✅ Simple AWS V4 signature authentication
 - ✅ Lightweight single-file deployment
 
+
+## TLDR
+
+Simply create a new website on your virtual host, place the `index.php` file from the GitHub repository into the website's root directory, modify the password configuration at the beginning of `index.php`, then config the rewite rule set all route to index.php, and you're ready to use it.
+
+- **Endpoint**: Your website domain  
+- **Access Key**: The password you configured  
+- **Secret Key**: Can be any value (not used in this project)  
+- **Region**: Can be any value (not used in this project)  
+
+For example, if an object has:  
+- `bucket="music"`  
+- `key="hello.mp3"`  
+
+It will be stored at: `./data/music/hello.mp3`  
+
+You can also combine this with Cloudflare's CDN for faster and more stable performance.
+
+
+
 ## Quick Start
 
 ### Requirements
