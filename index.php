@@ -68,12 +68,13 @@ function generate_s3_create_multipart_upload_response($bucket, $key, $uploadId) 
     exit;
 }
 
-function generate_s3_complete_multipart_upload_response($bucket, $key, $uploadId) {
+function generate_s3_complete_multipart_upload_response($bucket, $key, $uploadId, $etag) {
     $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><CompleteMultipartUploadResult></CompleteMultipartUploadResult>');
     $xml->addChild('Location', "http://{$_SERVER['HTTP_HOST']}/{$bucket}/{$key}");
     $xml->addChild('Bucket', $bucket);
     $xml->addChild('Key', $key);
     $xml->addChild('UploadId', $uploadId);
+    $xml->addChild('ETag', '"' . $etag . '"');
     
     header('Content-Type: application/xml');
     echo $xml->asXML();
@@ -167,6 +168,8 @@ switch ($method) {
             }
             
             file_put_contents($filePath, file_get_contents('php://input'));
+            $etag = md5_file($filePath);
+            header('ETag: "' . $etag . '"');
             http_response_code(200);
             exit;
         }
@@ -212,11 +215,19 @@ switch ($method) {
                 fwrite($fp, file_get_contents($partPath));
             }
             fclose($fp);
-            
+
+            // Calculate S3-style multipart ETag
+            $md5s = [];
+            foreach (array_keys($parts) as $partNumber) {
+                $partPath = "{$uploadDir}/{$partNumber}";
+                $md5s[] = pack('H*', md5_file($partPath));
+            }
+            $etag = md5(implode('', $md5s)) . '-' . count($md5s);
+                        
             // Clean up
             system("rm -rf " . escapeshellarg(DATA_DIR . "/{$bucket}/{$key}-temp"));
             
-            generate_s3_complete_multipart_upload_response($bucket, $key, $uploadId);
+            generate_s3_complete_multipart_upload_response($bucket, $key, $uploadId, $etag);
         } else {
             generate_s3_error_response('400', 'Invalid POST request: missing uploads or uploadId parameter', "/{$bucket}/{$key}");
         }
@@ -239,6 +250,8 @@ switch ($method) {
             
             header('Content-Type: ' . mime_content_type($filePath));
             header('Content-Length: ' . filesize($filePath));
+            $etag = md5_file($filePath);
+            header('ETag: "' . $etag . '"');
             readfile($filePath);
             exit;
         }
@@ -254,6 +267,8 @@ switch ($method) {
         
         header('Content-Length: ' . filesize($filePath));
         header('Content-Type: ' . mime_content_type($filePath));
+        $etag = md5_file($filePath);
+        header('ETag: "' . $etag . '"');
         http_response_code(200);
         exit;
         
